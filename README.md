@@ -1,50 +1,116 @@
-# Welcome to your Expo app 👋
+# React Native Learning Project
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A hands-on React Native app built while transitioning from a React/Next.js background.
+The goal is not just to ship a working app, but to deeply understand how React Native
+differs from web — and why.
 
-## Get started
+---
 
-1. Install dependencies
+## Background
 
-   ```bash
-   npm install
-   ```
+Coming from React and Next.js, the mental model shifts in React Native are non-trivial:
 
-2. Start the app
+| Web (React/Next.js) | React Native |
+|---|---|
+| `<div>`, `<p>`, `<input>` | `<View>`, `<Text>`, `<TextInput>` |
+| CSS / Tailwind classes | NativeWind (Tailwind → StyleSheet) |
+| `react-router` / file-based routing (Next.js) | Expo Router (file-based, same concept) |
+| `localStorage` / `sessionStorage` | `AsyncStorage` / `SecureStore` |
+| Browser form refs (uncontrolled inputs) | React Hook Form `Controller` (no DOM refs) |
+| `overflow: scroll` in CSS | `<ScrollView>` component |
+| Safe area = browser handles it | `SafeAreaView` with manual `edges` control |
+| Global CSS variables | `constants/` + NativeWind theme tokens |
+| `useContext` is common for global state | Zustand preferred (works outside React too) |
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## Stack
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+**Client**
+- [Expo](https://expo.dev) + [Expo Router](https://docs.expo.dev/router/introduction/) — file-based routing
+- [NativeWind](https://www.nativewind.dev/) — Tailwind CSS for React Native
+- [Zustand](https://zustand-demo.pmnd.rs/) — global client state (auth)
+- [TanStack Query](https://tanstack.com/query) — server state, caching, loading/error
+- [Axios](https://axios-http.com/) — HTTP client with interceptors for silent token refresh
+- [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) — form validation
+- [CVA](https://cva.style/) + [clsx](https://github.com/lukeed/clsx) — component variant design system
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+**Backend**
+- Node.js / Express — BFF (Backend for Frontend), owns business logic and auth
+- Supabase — PostgreSQL database + Auth (user records, refresh token storage)
 
-## Get a fresh project
+> The Express layer sits between the client and Supabase. The app never talks
+> to Supabase directly — the API shapes all responses for the mobile client.
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
+## Project Structure
+
+```
+app/
+  index.tsx              # Entry point — redirects based on auth state
+  _layout.tsx            # Root Stack (formSheet modals registered here)
+  (auth)/                # Auth screens — login, signup
+  (tabs)/                # Main app tabs — opportunities, profile
+  modal/                 # FormSheet modal (root Stack child, not tabs child)
+
+components/
+  atoms/                 # Design system — Button, Text, TextInput, Link, FormField
+  svgs/                  # Icon + illustration components
+
+lib/
+  axios/                 # Axios instance, interceptors, token store, silent refresh
+  query/                 # TanStack Query client config
+  stores/                # Zustand stores (auth-store)
+
+hooks/api/               # React Query mutation/query hooks (useLogin, useSignup, etc.)
+services/                # Axios service functions — one file per domain
+types/domain/            # TypeScript types for API contracts
+constants/               # Theme tokens, API endpoints
+docs/                    # Architecture decisions and patterns (see below)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## Key Patterns Learned
 
-To learn more about developing your project with Expo, look at the following resources:
+### Auth Flow
+JWT access token (short-lived, in memory) + refresh token (long-lived, SecureStore).
+Silent refresh queue prevents multiple concurrent token refreshes.
+→ See [`docs/auth-flow.md`](./docs/auth-flow.md)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Protected Routes
+`app/index.tsx` handles the initial redirect. Layout files (`_layout.tsx`) act as
+reactive guards — Zustand state changes trigger re-renders and redirect automatically.
+→ See [`docs/protected-routes.md`](./docs/protected-routes.md)
 
-## Join the community
+### State Management
+Zustand for auth/client state. React Query for server state. They don't overlap.
+Zustand's `getState()` works outside React (used in Axios interceptors).
+→ See [`docs/state-management.md`](./docs/state-management.md)
 
-Join our community of developers creating universal apps.
+### Forms
+React Hook Form requires `Controller` in React Native (no DOM refs).
+Reusable `FormField` component wraps `Controller` + error display into one line per field.
+→ See [`docs/react-hook-form.md`](./docs/react-hook-form.md)
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Safe Area
+`SafeAreaView` with `edges={["top"]}` inside tab screens — the tab bar handles
+its own bottom inset, so applying `"bottom"` causes a visible double gap.
+→ See [`docs/safe-area.md`](./docs/safe-area.md)
+
+### Axios Service Layer
+Services return typed Axios promises. Hooks wrap them with React Query.
+This keeps network logic out of components entirely.
+→ See [`docs/axios-service-layer.md`](./docs/axios-service-layer.md)
+
+---
+
+## Running the App
+
+```bash
+npm install
+npx expo start
+```
+
+Open in iOS Simulator, Android Emulator, or Expo Go.

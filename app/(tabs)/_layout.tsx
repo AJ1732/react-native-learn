@@ -1,35 +1,55 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Redirect, Tabs } from "expo-router";
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { HomeIcon } from "@/components/svgs/home-icon";
+import { ProfileIcon } from "@/components/svgs/profile-icon";
+import { StarIcon } from "@/components/svgs/star-icon";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+const TabsLayout = () => {
+  const isAuth = useAuthStore((state) => state.isAuth);
+  if (!isAuth) return <Redirect href="/(auth)/login" />;
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
+        tabBarActiveTintColor: "#bf00ff",
+        tabBarInactiveTintColor: "#a3a3a3",
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: "Home",
+          tabBarIcon: ({ color, size }) => (
+            <HomeIcon color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="opportunities/index"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: "Opportunities",
+          tabBarIcon: ({ color, size }) => (
+            <StarIcon color={color} size={size} />
+          ),
         }}
+      />
+      <Tabs.Screen
+        name="profile/index"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color, size }) => (
+            <ProfileIcon color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="opportunities/detail/index"
+        options={{ href: null, tabBarStyle: { display: "none" } }}
       />
     </Tabs>
   );
-}
+};
+
+export default TabsLayout;
