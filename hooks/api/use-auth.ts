@@ -15,10 +15,10 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (dto: LoginDTO) => AuthService.login({ data: dto }),
     onSuccess: (response) => {
-      const { access_token, refresh_token, user } = (
+      const { access_token, refresh_token, expires_at, user } = (
         response.data as LoginResponse
       ).data;
-      login(access_token, refresh_token, user);
+      login(access_token, refresh_token, user, expires_at);
     },
   });
 };
@@ -27,11 +27,17 @@ export const useSignup = () => {
   const login = useAuthStore((state) => state.login);
 
   return useMutation({
-    mutationFn: (dto: SignupDTO) => AuthService.signup({ data: dto }),
+    mutationFn: (dto: SignupDTO) => {
+      const formData = new FormData();
+      (Object.keys(dto) as (keyof SignupDTO)[]).forEach((key) => {
+        formData.append(key, dto[key] as string);
+      });
+      return AuthService.signup({ data: formData });
+    },
     onSuccess: (response) => {
       const { data } = response.data as SignupResponse;
-      const { access_token, refresh_token } = data.session;
-      login(access_token, refresh_token, data.user);
+      const { access_token, refresh_token, expires_at } = data.session;
+      login(access_token, refresh_token, data.user, expires_at);
     },
   });
 };
@@ -42,5 +48,7 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: () => AuthService.logout(),
     onSettled: () => logout(),
+    // Always clear locally — even if server rejects (expired token, 403, network error)
+    onError: () => {},
   });
 };

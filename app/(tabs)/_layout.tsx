@@ -36,17 +36,17 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="profile/index"
+        name="opportunities/detail/index"
+        options={{ href: null, tabBarStyle: { display: "none" } }}
+      />
+      <Tabs.Screen
+        name="profile"
         options={{
           title: "Profile",
           tabBarIcon: ({ color, size }) => (
             <ProfileIcon color={color} size={size} />
           ),
         }}
-      />
-      <Tabs.Screen
-        name="opportunities/detail/index"
-        options={{ href: null, tabBarStyle: { display: "none" } }}
       />
     </Tabs>
   );

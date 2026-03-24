@@ -11,7 +11,7 @@ const Opportunities = () => {
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center">
+      <View className="flex-1 items-center bg-white justify-center">
         <Text>Loading Opportunities</Text>
       </View>
     );
@@ -19,7 +19,12 @@ const Opportunities = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
-      <ScrollView contentContainerClassName="gap-4 p-4">
+      <View className="p-4">
+        <Text variant="display" size="3xl">
+          Opportunities
+        </Text>
+      </View>
+      <ScrollView contentContainerClassName="gap-4 p-4 pt-0">
         {opportunities?.map((opportunity) => (
           <Link
             key={opportunity.id}

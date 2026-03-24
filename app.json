@@ -10,7 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.learn"
+      "bundleIdentifier": "com.anonymous.learn",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "We need access to your photo library so you upload images",
+        "NSCameraUsageDescription": "We need access to your camera so we can take images"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,6 +25,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
+      "permissions": ["CAMERA", "READ_MEDIA_IMAGES"],
       "package": "com.anonymous.learn"
     },
     "web": {

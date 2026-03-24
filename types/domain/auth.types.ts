@@ -1,3 +1,8 @@
+import type { Tables } from "@/types";
+import type { ApiResponse } from "@/types/common/api";
+
+export type User = Tables<"profiles">;
+
 export type LoginDTO = {
   email: string;
   password: string;
@@ -10,11 +15,6 @@ export type SignupDTO = {
   password: string;
 };
 
-export type AuthUser = {
-  id: string;
-  email: string;
-};
-
 type Session = {
   access_token: string;
   refresh_token: string;
@@ -22,25 +22,23 @@ type Session = {
 };
 
 type LoginData = {
-  user: AuthUser;
+  user: User;
   access_token: string;
   refresh_token: string;
   expires_at: number;
 };
 
 type SignupData = {
-  user: AuthUser;
+  user: User;
   session: Session;
 };
 
-export type LoginResponse = {
-  success: boolean;
-  message: string;
-  data: LoginData;
+export type UpdateProfileDTO = {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  profileImage?: import("@/types/common/api").ImageAsset;
 };
 
-export type SignupResponse = {
-  success: boolean;
-  message: string;
-  data: SignupData;
-};
+export type LoginResponse = ApiResponse<LoginData>;
+export type SignupResponse = ApiResponse<SignupData>;

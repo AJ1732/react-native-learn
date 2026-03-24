@@ -2,7 +2,11 @@ import Svg, { Path } from "react-native-svg";
 
 import { IconProps } from "@/types/domain/svg.types";
 
-export function ProfileIcon({ color = "#000", size = 24, style }: IconProps) {
+export function ProfileIcon({
+  color = "#292D32",
+  size = 24,
+  style,
+}: IconProps) {
   return (
     <Svg
       width={size}

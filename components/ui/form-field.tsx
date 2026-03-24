@@ -1,15 +1,14 @@
 import {
-  Control,
   Controller,
-  FieldPath,
-  FieldValues,
-  RegisterOptions,
+  type Control,
+  type FieldPath,
+  type FieldValues,
+  type RegisterOptions,
 } from "react-hook-form";
-import { View } from "react-native";
+import { View, type TextInputProps } from "react-native";
 
-import type { TextInputProps } from "react-native";
-import { Text } from "./text";
-import { TextInput } from "./text-input";
+import { Text } from "../atoms/text";
+import { TextInput } from "../atoms/text-input";
 
 type Props<T extends FieldValues> = TextInputProps & {
   control: Control<T>;

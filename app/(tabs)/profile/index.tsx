@@ -1,14 +1,25 @@
+import { Image } from "expo-image";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/atoms/button";
+import { Link } from "@/components/atoms/link";
 import { Text } from "@/components/atoms/text";
 import { useLogout } from "@/hooks/api/use-auth";
-import { useAuthStore } from "@/lib/stores/auth-store";
+import { useProfile } from "@/hooks/api/use-user";
+
+const ProfileLoadingSkeleton = () => {
+  return (
+    <>
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    </>
+  );
+};
 
 const Profile = () => {
-  const user = useAuthStore((state) => state.user);
-
+  const { data: profile, isLoading } = useProfile();
   const { mutateAsync: logout, isPending } = useLogout();
   const handleLogout = async () => await logout();
 
@@ -16,20 +27,62 @@ const Profile = () => {
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <ScrollView contentContainerClassName="px-4">
         <View className="gap-8 py-8">
-          <Text variant="display" size="3xl">
-            Profile
-          </Text>
+          <View className="flex-row items-center justify-between">
+            <Text variant="display" size="3xl">
+              Profile
+            </Text>
 
-          <View>
-            <Text>{user?.email}</Text>
+            {isLoading ? (
+              <View className="size-11 bg-neutral-200" />
+            ) : (
+              <Link
+                href="/profile/update"
+                variant="accent"
+                className="size-11 bg-neutral-200"
+              />
+            )}
           </View>
+          {isLoading ? (
+            <ProfileLoadingSkeleton />
+          ) : (
+            <>
+              <View className="flex-row items-end gap-4">
+                {!!profile?.profile_image_url && (
+                  <View
+                    className="items-center justify-center self-start rounded-full border border-dashed border-neutral-100 bg-neutral-100"
+                    style={{ width: 99, height: 99, overflow: "hidden" }}
+                  >
+                    <Image
+                      source={{
+                        uri: `${profile.profile_image_url}?t=${profile.updated_at}`,
+                      }}
+                      style={{ width: 96, height: 96, borderRadius: 48 }}
+                      contentFit="cover"
+                      transition={200}
+                    />
+                  </View>
+                )}
 
-          <Button
-            variant={"destructive"}
-            label="Click to logout"
-            loading={isPending}
-            onPress={handleLogout}
-          />
+                <View className="pb-4">
+                  <View className="flex-row items-center gap-1 uppercase">
+                    {[profile?.first_name, profile?.last_name].map((name) => (
+                      <Text key={name} size="lg" className="">
+                        {name}
+                      </Text>
+                    ))}
+                  </View>
+                  <Text variant={"muted"}>{profile?.email}</Text>
+                </View>
+              </View>
+
+              <Button
+                variant={"destructive"}
+                label="Click to logout"
+                loading={isPending}
+                onPress={handleLogout}
+              />
+            </>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      content_reviews: {
+        Row: {
+          content_id: string
+          content_type: Database["public"]["Enums"]["content_type_enum"]
+          created_at: string
+          decision: string
+          feedback: string | null
+          id: string
+          reviewer_id: string
+        }
+        Insert: {
+          content_id: string
+          content_type: Database["public"]["Enums"]["content_type_enum"]
+          created_at?: string
+          decision: string
+          feedback?: string | null
+          id?: string
+          reviewer_id: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: Database["public"]["Enums"]["content_type_enum"]
+          created_at?: string
+          decision?: string
+          feedback?: string | null
+          id?: string
+          reviewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_products: {
         Row: {
           amount_max: number | null
@@ -189,6 +227,7 @@ export type Database = {
           sectors: string[]
           stages: string[] | null
           status: Database["public"]["Enums"]["listing_status_enum"]
+          submitted_by: string | null
           updated_at: string
         }
         Insert: {
@@ -215,6 +254,7 @@ export type Database = {
           sectors?: string[]
           stages?: string[] | null
           status?: Database["public"]["Enums"]["listing_status_enum"]
+          submitted_by?: string | null
           updated_at?: string
         }
         Update: {
@@ -241,9 +281,18 @@ export type Database = {
           sectors?: string[]
           stages?: string[] | null
           status?: Database["public"]["Enums"]["listing_status_enum"]
+          submitted_by?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "funding_opportunities_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       funding_opportunities_test: {
         Row: {
@@ -308,6 +357,53 @@ export type Database = {
         }
         Relationships: []
       }
+      guides: {
+        Row: {
+          approval_status: string
+          category: string | null
+          content: string | null
+          created_at: string
+          id: string
+          slug: string
+          submitted_by: string | null
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          approval_status?: string
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          slug: string
+          submitted_by?: string | null
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          approval_status?: string
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          slug?: string
+          submitted_by?: string | null
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guides_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -315,17 +411,19 @@ export type Database = {
           first_name: string
           id: string
           last_name: string
+          profile_image_url: string | null
           role: Database["public"]["Enums"]["enum_profiles_role"] | null
           updated_at: string
         }
         Insert: {
-          created_at: string
+          created_at?: string
           email: string
           first_name: string
           id: string
           last_name: string
+          profile_image_url?: string | null
           role?: Database["public"]["Enums"]["enum_profiles_role"] | null
-          updated_at: string
+          updated_at?: string
         }
         Update: {
           created_at?: string
@@ -333,10 +431,47 @@ export type Database = {
           first_name?: string
           id?: string
           last_name?: string
+          profile_image_url?: string | null
           role?: Database["public"]["Enums"]["enum_profiles_role"] | null
           updated_at?: string
         }
         Relationships: []
+      }
+      saved_opportunities: {
+        Row: {
+          created_at: string
+          id: string
+          opportunity_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          opportunity_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          opportunity_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_opportunities_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "funding_opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_opportunities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sectors: {
         Row: {
@@ -368,6 +503,50 @@ export type Database = {
         }
         Relationships: []
       }
+      templates: {
+        Row: {
+          approval_status: string
+          category: string | null
+          created_at: string
+          description: string | null
+          file_url: string | null
+          id: string
+          submitted_by: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          approval_status?: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          file_url?: string | null
+          id?: string
+          submitted_by?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          approval_status?: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          file_url?: string | null
+          id?: string
+          submitted_by?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "templates_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       training_programmes: {
         Row: {
           application_deadline: string | null
@@ -391,6 +570,7 @@ export type Database = {
           programme_type: Database["public"]["Enums"]["programme_type_enum"]
           provider: string | null
           reference_code: string | null
+          submitted_by: string | null
           topics_covered: string | null
           updated_at: string
         }
@@ -416,6 +596,7 @@ export type Database = {
           programme_type: Database["public"]["Enums"]["programme_type_enum"]
           provider?: string | null
           reference_code?: string | null
+          submitted_by?: string | null
           topics_covered?: string | null
           updated_at: string
         }
@@ -441,10 +622,19 @@ export type Database = {
           programme_type?: Database["public"]["Enums"]["programme_type_enum"]
           provider?: string | null
           reference_code?: string | null
+          submitted_by?: string | null
           topics_covered?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "training_programmes_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       training_programmes_test: {
         Row: {
@@ -517,6 +707,11 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      content_type_enum:
+        | "funding_opportunity"
+        | "training_programme"
+        | "guide"
+        | "template"
       cost_type_enum: "free" | "paid" | "sponsored"
       duration_range_enum:
         | "lt_1_week"
@@ -690,6 +885,12 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      content_type_enum: [
+        "funding_opportunity",
+        "training_programme",
+        "guide",
+        "template",
+      ],
       cost_type_enum: ["free", "paid", "sponsored"],
       duration_range_enum: [
         "lt_1_week",

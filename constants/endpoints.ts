@@ -7,6 +7,10 @@ export const ENDPOINTS = {
     me: "/auth/me",
   },
 
+  user: {
+    profile: "/profile",
+  },
+
   opportunities: {
     all: "/opportunities",
     byId: (id: ID) => `/opportunities/${id}`,
