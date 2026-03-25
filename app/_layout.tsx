@@ -17,6 +17,8 @@ import NetInfo from "@react-native-community/netinfo";
 import { focusManager, onlineManager } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 
+import { StatusBar } from "expo-status-bar";
+
 import "./global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -64,14 +66,22 @@ export default function RootLayout() {
       }}
     >
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+        <StatusBar style="dark" />
         <OfflineBanner />
-        <Stack screenOptions={{ headerShown: false, animation: "none" }}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: "none",
+            contentStyle: { backgroundColor: "white" },
+          }}
+        >
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen
             name="modal/index"
             options={{
               presentation: "formSheet",
+              animation: "default",
               sheetAllowedDetents: [0.5, 1.0],
               sheetInitialDetentIndex: 0,
               sheetGrabberVisible: true,

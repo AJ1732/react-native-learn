@@ -1,8 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { clsx } from "clsx";
 import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
-import { ScrollView, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { z } from "zod";
 
 import { Button } from "@/components/atoms/button";
@@ -70,6 +71,7 @@ const UpdateProfile = () => {
   );
 
   const onSubmit = (dto: UpdateProfileFormValues) => {
+    console.log("Clcicked o");
     const { dirtyFields } = formState;
     const payload: UpdateProfileDTO = {};
 
@@ -95,78 +97,94 @@ const UpdateProfile = () => {
       onSuccess: () => {
         router.back();
       },
+      onError: (error) => {
+        console.error("updateProfile error:", error);
+        alert("Failed to update profile. Please try again.");
+      },
     });
   };
 
   return (
-    <ScrollView className="bg-white">
-      <View className="flex-1 grow flex-col justify-center gap-6 px-6">
-        <View className="mt-8 gap-1.5">
-          <Text variant="display" size="3xl">
-            Update profile
-          </Text>
-          <Text variant="muted">What do you wanna change?</Text>
-        </View>
-
-        <View style={{ minHeight: 540 }} className="gap-2 pt-4">
-          {/* Profile Image */}
-          <View className="gap-2 pb-4">
-            <View className="flex-row items-end gap-8">
-              <FormImagePicker
-                control={control}
-                name="profileImage"
-                showError={false}
-              />
-              <View className="mb-4 gap-1">
-                <Text variant="muted">Max Size: 5MB</Text>
-                <Text variant="muted">JPEG/PNG/WebP only</Text>
-              </View>
-            </View>
-            {formState.errors.profileImage && (
-              <Text size="sm" className="text-red-500">
-                {formState.errors.profileImage.message}
-              </Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <ScrollView className="bg-white" keyboardShouldPersistTaps="handled">
+        <View className="flex-1 grow flex-col justify-center gap-6 px-6">
+          <View
+            className={clsx(
+              "gap-1.5",
+              Platform.OS === "ios" ? "mt-8" : "mt-10 ",
             )}
+          >
+            <Text variant="display" size="3xl">
+              Update profile
+            </Text>
+            <Text variant="muted">What do you wanna change?</Text>
           </View>
 
-          <FormField
-            control={control}
-            name="firstName"
-            placeholder="Enter first name"
-          />
+          <View style={{ minHeight: 500 }} className="gap-2 pt-4">
+            {/* Profile Image */}
+            <View className="gap-2 pb-4">
+              <View className="flex-row items-end gap-8">
+                <FormImagePicker
+                  control={control}
+                  name="profileImage"
+                  showError={false}
+                />
+                <View className="mb-4 gap-1">
+                  <Text variant="muted">Max Size: 5MB</Text>
+                  <Text variant="muted">JPEG/PNG/WebP only</Text>
+                </View>
+              </View>
+              {formState.errors.profileImage && (
+                <Text size="sm" className="text-red-500">
+                  {formState.errors.profileImage.message}
+                </Text>
+              )}
+            </View>
 
-          <FormField
-            control={control}
-            name="lastName"
-            placeholder="Enter last name"
-          />
+            <FormField
+              control={control}
+              name="firstName"
+              placeholder="Enter first name"
+            />
 
-          <FormField
-            control={control}
-            name="email"
-            placeholder="Enter email"
-            keyboardType="email-address"
-            editable={false}
-          />
+            <FormField
+              control={control}
+              name="lastName"
+              placeholder="Enter last name"
+            />
+
+            <FormField
+              control={control}
+              name="email"
+              placeholder="Enter email"
+              keyboardType="email-address"
+              editable={false}
+            />
+          </View>
+
+          <View className="mt-auto gap-2">
+            <Button
+              label="Cancel"
+              variant="outline"
+              onPress={() => router.back()}
+              fullWidth
+            />
+            <Button
+              label="Save Changes"
+              onPress={handleSubmit(onSubmit, (errors) =>
+                console.log("Validation errors:", JSON.stringify(errors)),
+              )}
+              loading={isPending}
+              disabled={!formState.isDirty}
+              fullWidth
+            />
+          </View>
         </View>
-
-        <View className="mt-auto gap-2">
-          <Button
-            label="Cancel"
-            variant="outline"
-            onPress={() => router.back()}
-            fullWidth
-          />
-          <Button
-            label="Save Changes"
-            onPress={handleSubmit(onSubmit)}
-            loading={isPending}
-            disabled={!formState.isDirty}
-            fullWidth
-          />
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

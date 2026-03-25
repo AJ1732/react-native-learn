@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
+import { KeyboardAvoidingView, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
@@ -67,10 +67,7 @@ const Signup = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
-      <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
+      <KeyboardAvoidingView className="flex-1" behavior="padding">
         <ScrollView
           contentContainerClassName="grow justify-center gap-6 px-4 pt-8 pb-12"
           keyboardShouldPersistTaps="handled"

@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { Pressable, ScrollView, View } from "react-native";
+import { Pressable, RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/atoms/button";
@@ -12,7 +12,7 @@ import { useLogout } from "@/hooks/api/use-auth";
 import { useProfile } from "@/hooks/api/use-user";
 
 const ProfileContent = () => {
-  const { data: profile, isLoading, isError, refetch } = useProfile();
+  const { data: profile, isLoading, isError, isRefetching, refetch } = useProfile();
 
   if (isError) {
     return (
@@ -52,7 +52,17 @@ const ProfileContent = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
-      <ScrollView contentContainerClassName="px-4">
+      <ScrollView
+        contentContainerClassName="px-4"
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() => { refetch(); }}
+            tintColor="#bf00ff"
+            colors={["#bf00ff"]}
+          />
+        }
+      >
         <View className="gap-8 py-8">
           <View className="flex-row items-center justify-end">
             {/* Edit profile */}

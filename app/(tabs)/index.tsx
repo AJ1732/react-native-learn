@@ -8,10 +8,10 @@ export default function Index() {
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView contentContainerClassName="gap-4 pb-4 px-4">
         <View className="gap-6 py-8">
-          <Link href={{ pathname: "/modal", params: { component: "1" } }}>
+          <Link href={{ pathname: "/modal", params: { component: "modal-1" } }}>
             Modal 1
           </Link>
-          <Link href={{ pathname: "/modal", params: { component: "2" } }}>
+          <Link href={{ pathname: "/modal", params: { component: "modal-2" } }}>
             Modal 2
           </Link>
         </View>

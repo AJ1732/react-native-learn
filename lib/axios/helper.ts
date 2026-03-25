@@ -24,11 +24,6 @@ export function makeRequests(route: string, method: HttpMethod = "GET") {
       ...requestConfig,
     };
 
-    // Let axios generate the correct multipart boundary for FormData
-    if (data instanceof FormData) {
-      config.headers = { ...config.headers, "Content-Type": undefined };
-    }
-
     return axiosInstance(config);
   };
 }

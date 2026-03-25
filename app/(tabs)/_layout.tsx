@@ -1,4 +1,4 @@
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, Tabs, usePathname } from "expo-router";
 
 import { HomeIcon } from "@/components/svgs/home-icon";
 import { ProfileIcon } from "@/components/svgs/profile-icon";
@@ -6,7 +6,10 @@ import { StarIcon } from "@/components/svgs/star-icon";
 import { useAuthStore } from "@/lib/stores/auth-store";
 
 const TabsLayout = () => {
+  const pathname = usePathname();
+  const hideTabBar = pathname.includes("/opportunities/detail");
   const isAuth = useAuthStore((state) => state.isAuth);
+
   if (!isAuth) return <Redirect href="/(auth)/login" />;
 
   return (
@@ -15,6 +18,7 @@ const TabsLayout = () => {
         headerShown: false,
         tabBarActiveTintColor: "#bf00ff",
         tabBarInactiveTintColor: "#a3a3a3",
+        tabBarStyle: hideTabBar ? { display: "none" } : undefined,
       }}
     >
       <Tabs.Screen
@@ -27,17 +31,13 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="opportunities/index"
+        name="opportunities"
         options={{
           title: "Opportunities",
           tabBarIcon: ({ color, size }) => (
             <StarIcon color={color} size={size} />
           ),
         }}
-      />
-      <Tabs.Screen
-        name="opportunities/detail/index"
-        options={{ href: null, tabBarStyle: { display: "none" } }}
       />
       <Tabs.Screen
         name="profile"
