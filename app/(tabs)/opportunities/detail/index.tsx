@@ -1,16 +1,28 @@
 import { useLocalSearchParams } from "expo-router";
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
 import { Link } from "@/components/atoms/link";
+import { QueryErrorBoundary } from "@/components/atoms/query-error-boundary";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { Text } from "@/components/atoms/text";
 import { CardBgPurple } from "@/components/svgs/card-bg-purple";
 import { ChevronDownIcon } from "@/components/svgs/chevron-down-icon";
 import { useOpportunity } from "@/hooks/api/use-opportunities";
 
-export default function Details() {
+function DetailsContent() {
   const params = useLocalSearchParams<{ id: string }>();
-  const { data: opportunity, isLoading } = useOpportunity(params.id);
+  const { data: opportunity, isLoading, isError, refetch } = useOpportunity(params.id);
+
+  if (isError) {
+    return (
+      <View className="flex-1 items-center justify-center gap-4 bg-white p-8">
+        <Text variant="muted">Could not load opportunity.</Text>
+        <Pressable onPress={() => refetch()} className="rounded-full bg-neutral-100 px-6 py-3">
+          <Text>Retry</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -57,5 +69,13 @@ export default function Details() {
         </Text>
       </View>
     </ScrollView>
+  );
+}
+
+export default function Details() {
+  return (
+    <QueryErrorBoundary>
+      <DetailsContent />
+    </QueryErrorBoundary>
   );
 }

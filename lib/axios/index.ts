@@ -42,6 +42,15 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
+    // No response object means the device is offline or the server is unreachable
+    if (!error.response) {
+      return Promise.reject(
+        Object.assign(new Error("No internet connection"), {
+          isNetworkError: true,
+        }),
+      );
+    }
+
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };

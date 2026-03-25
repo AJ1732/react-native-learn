@@ -1,17 +1,29 @@
 import { Image } from "expo-image";
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/atoms/button";
 import { Link } from "@/components/atoms/link";
+import { QueryErrorBoundary } from "@/components/atoms/query-error-boundary";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { Text } from "@/components/atoms/text";
 import { Edit2Icon } from "@/components/svgs/edit-2-icon";
 import { useLogout } from "@/hooks/api/use-auth";
 import { useProfile } from "@/hooks/api/use-user";
 
-const Profile = () => {
-  const { data: profile, isLoading } = useProfile();
+const ProfileContent = () => {
+  const { data: profile, isLoading, isError, refetch } = useProfile();
+
+  if (isError) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white p-8" edges={["top"]}>
+        <Text variant="muted">Could not load profile.</Text>
+        <Pressable onPress={() => refetch()} className="rounded-full bg-neutral-100 px-6 py-3">
+          <Text>Retry</Text>
+        </Pressable>
+      </SafeAreaView>
+    );
+  }
   const { mutateAsync: logout, isPending } = useLogout();
   const handleLogout = async () => await logout();
 
@@ -92,5 +104,11 @@ const Profile = () => {
     </SafeAreaView>
   );
 };
+
+const Profile = () => (
+  <QueryErrorBoundary>
+    <ProfileContent />
+  </QueryErrorBoundary>
+);
 
 export default Profile;

@@ -1,14 +1,26 @@
 import { Link } from "@/components/atoms/link";
+import { QueryErrorBoundary } from "@/components/atoms/query-error-boundary";
 import { Text } from "@/components/atoms/text";
-import { ScrollView, View } from "react-native";
+import { ScrollView, View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Skeleton } from "@/components/atoms/skeleton";
 import { CardBgPurple } from "@/components/svgs/card-bg-purple";
 import { useOpportunities } from "@/hooks/api/use-opportunities";
 
-const Opportunities = () => {
-  const { data: opportunities, isLoading } = useOpportunities();
+const OpportunitiesList = () => {
+  const { data: opportunities, isLoading, isError, refetch } = useOpportunities();
+
+  if (isError) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white p-8" edges={["top"]}>
+        <Text variant="muted">Could not load opportunities.</Text>
+        <Pressable onPress={() => refetch()} className="rounded-full bg-neutral-100 px-6 py-3">
+          <Text>Retry</Text>
+        </Pressable>
+      </SafeAreaView>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -50,5 +62,11 @@ const Opportunities = () => {
     </SafeAreaView>
   );
 };
+
+const Opportunities = () => (
+  <QueryErrorBoundary>
+    <OpportunitiesList />
+  </QueryErrorBoundary>
+);
 
 export default Opportunities;

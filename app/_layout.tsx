@@ -1,3 +1,4 @@
+import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -7,14 +8,15 @@ import {
   initialWindowMetrics,
 } from "react-native-safe-area-context";
 
+import { OfflineBanner } from "@/components/atoms/offline-banner";
 import { initTokenStore } from "@/lib/axios/token-store";
+import { asyncStoragePersister } from "@/lib/query/persister";
 import { queryClient } from "@/lib/query/query-client";
+import { useOfflineQueue } from "@/lib/stores/offline-queue.store";
 import NetInfo from "@react-native-community/netinfo";
-import {
-  QueryClientProvider,
-  focusManager,
-  onlineManager,
-} from "@tanstack/react-query";
+import { focusManager, onlineManager } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+
 import "./global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -26,17 +28,27 @@ function onAppStateChange(status: AppStateStatus) {
   }
 }
 
-// Pause/resume queries based on network connectivity
+// Pause/resume queries based on network connectivity, flush offline queue on reconnect
 onlineManager.setEventListener((setOnline) => {
   return NetInfo.addEventListener((state) => {
-    setOnline(!!state.isConnected);
+    const online = !!state.isConnected;
+    setOnline(online);
+    if (online) {
+      useOfflineQueue.getState().flush();
+    }
   });
 });
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    "Brockmann-Medium": require("../assets/fonts/Brockmann-Medium.otf"),
+    "integralcf-bold": require("../assets/fonts/integralcf-bold.otf"),
+  });
+
   useEffect(() => {
+    if (!fontsLoaded) return;
     initTokenStore().then(() => SplashScreen.hideAsync());
-  }, []);
+  }, [fontsLoaded]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", onAppStateChange);
@@ -44,9 +56,16 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{
+        persister: asyncStoragePersister,
+        maxAge: 1000 * 60 * 60 * 24, // 24h
+      }}
+    >
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-        <Stack screenOptions={{ headerShown: false }}>
+        <OfflineBanner />
+        <Stack screenOptions={{ headerShown: false, animation: "none" }}>
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen
@@ -60,6 +79,6 @@ export default function RootLayout() {
           />
         </Stack>
       </SafeAreaProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }

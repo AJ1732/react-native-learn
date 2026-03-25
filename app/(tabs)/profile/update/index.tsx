@@ -10,6 +10,8 @@ import { Text } from "@/components/atoms/text";
 import { FormField } from "@/components/ui/form-field";
 import { FormImagePicker } from "@/components/ui/form-image-picker";
 import { useProfile, useUpdateProfile } from "@/hooks/api/use-user";
+import { useNetworkStatus } from "@/hooks/use-network-status";
+import { useOfflineQueue } from "@/lib/stores/offline-queue.store";
 import type { ImageAsset } from "@/types/common/api";
 import type { UpdateProfileDTO } from "@/types/domain/auth.types";
 
@@ -50,6 +52,8 @@ const UpdateProfile = () => {
   const router = useRouter();
   const { data: profile } = useProfile();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
+  const { isConnected } = useNetworkStatus();
+  const enqueue = useOfflineQueue((state) => state.enqueue);
 
   const { control, handleSubmit, formState } = useForm<UpdateProfileFormValues>(
     {
@@ -74,6 +78,18 @@ const UpdateProfile = () => {
     if (dirtyFields.email) payload.email = dto.email;
     if (dirtyFields.profileImage)
       payload.profileImage = dto.profileImage ?? undefined;
+
+    if (!isConnected) {
+      if (payload.profileImage) {
+        // Image URIs are temp paths — cannot be reliably queued offline
+        alert("You must be online to update your profile photo.");
+        return;
+      }
+      enqueue(payload);
+      alert("Saved offline. Changes will sync when you reconnect.");
+      router.back();
+      return;
+    }
 
     updateProfile(payload, {
       onSuccess: () => {
