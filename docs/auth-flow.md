@@ -162,6 +162,27 @@ are restored — no re-login required.
 
 ---
 
+## Startup Race Condition: Splash Screen vs Rehydration
+
+`isAuth` starts as `false`. If `SplashScreen.hideAsync()` fires before
+`initTokenStore()` resolves, `app/index.tsx` sees `isAuth = false` and
+redirects returning users to login — causing a flash before the correct
+redirect to tabs.
+
+**Fix:** tie the splash screen hide to the completion of `initTokenStore`:
+
+```ts
+// app/_layout.tsx
+useEffect(() => {
+  initTokenStore().then(() => SplashScreen.hideAsync());
+}, []);
+```
+
+The splash screen acts as a loading gate. Auth state is correct before any
+screen renders.
+
+---
+
 ## Full Token Lifecycle
 
 ```

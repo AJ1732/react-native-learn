@@ -139,6 +139,36 @@ inside a child layout instead.
 
 ---
 
+## Race Condition: Splash Screen vs Token Rehydration
+
+On app launch, `isAuth` defaults to `false` in the Zustand store. If the
+splash screen hides before `initTokenStore()` finishes reading from SecureStore,
+`app/index.tsx` redirects returning users to login — then immediately redirects
+back to tabs once rehydration completes. This causes a visible flash.
+
+**Incorrect (two uncoordinated effects):**
+
+```ts
+// app/_layout.tsx
+useEffect(() => { SplashScreen.hideAsync(); }, []);   // hides immediately
+useEffect(() => { initTokenStore(); }, []);            // rehydrates async
+```
+
+**Correct (splash hides only after rehydration):**
+
+```ts
+// app/_layout.tsx
+useEffect(() => {
+  initTokenStore().then(() => SplashScreen.hideAsync());
+}, []);
+```
+
+The splash screen acts as a loading gate — by the time it hides, `isAuth` is
+already set to its correct value and `app/index.tsx` routes directly to the
+right screen with no flash.
+
+---
+
 ## File Structure
 
 ```

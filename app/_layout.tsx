@@ -35,16 +35,12 @@ onlineManager.setEventListener((setOnline) => {
 
 export default function RootLayout() {
   useEffect(() => {
-    SplashScreen.hideAsync();
+    initTokenStore().then(() => SplashScreen.hideAsync());
   }, []);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", onAppStateChange);
     return () => subscription.remove();
-  }, []);
-
-  useEffect(() => {
-    initTokenStore(); // rehydrate token from SecureStore
   }, []);
 
   return (

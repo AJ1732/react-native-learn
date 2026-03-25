@@ -11,9 +11,12 @@ const Opportunities = () => {
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center bg-white justify-center">
+      <SafeAreaView
+        className="flex-1 items-center justify-center bg-white"
+        edges={["top"]}
+      >
         <Text>Loading Opportunities</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
