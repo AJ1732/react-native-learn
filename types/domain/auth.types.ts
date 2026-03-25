@@ -1,7 +1,9 @@
 import type { Tables } from "@/types";
 import type { ApiResponse } from "@/types/common/api";
 
-export type User = Tables<"profiles">;
+export type User = Tables<"profiles"> & {
+  profile_image_url: string;
+};
 
 export type LoginDTO = {
   email: string;

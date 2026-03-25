@@ -11,6 +11,7 @@ import { FormField } from "@/components/ui/form-field";
 import { FormImagePicker } from "@/components/ui/form-image-picker";
 import { useProfile, useUpdateProfile } from "@/hooks/api/use-user";
 import type { ImageAsset } from "@/types/common/api";
+import type { UpdateProfileDTO } from "@/types/domain/auth.types";
 
 const mimeTypeFromUrl = (url: string): string | null => {
   const ext = url.split("?")[0].split(".").pop()?.toLowerCase();
@@ -57,25 +58,28 @@ const UpdateProfile = () => {
         firstName: profile?.first_name,
         lastName: profile?.last_name,
         email: profile?.email,
-        profileImage: profile?.profile_image_path
-          ? urlToImageAsset(profile.profile_image_path, profile.updated_at)
+        profileImage: profile?.profile_image_url
+          ? urlToImageAsset(profile.profile_image_url, profile.updated_at)
           : null,
       },
     },
   );
 
   const onSubmit = (dto: UpdateProfileFormValues) => {
-    updateProfile(
-      {
-        ...dto,
-        profileImage: dto.profileImage ?? undefined,
+    const { dirtyFields } = formState;
+    const payload: UpdateProfileDTO = {};
+
+    if (dirtyFields.firstName) payload.firstName = dto.firstName;
+    if (dirtyFields.lastName) payload.lastName = dto.lastName;
+    if (dirtyFields.email) payload.email = dto.email;
+    if (dirtyFields.profileImage)
+      payload.profileImage = dto.profileImage ?? undefined;
+
+    updateProfile(payload, {
+      onSuccess: () => {
+        router.back();
       },
-      {
-        onSuccess: () => {
-          router.back();
-        },
-      },
-    );
+    });
   };
 
   return (
