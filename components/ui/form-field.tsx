@@ -27,21 +27,27 @@ export function FormField<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <View className="gap-1">
-          <TextInput
-            value={value}
-            onChangeText={onChange}
-            variant={error ? "error" : "default"}
-            {...inputProps}
-          />
-          {error && (
-            <Text size="sm" className="text-red-500">
-              {error.message}
-            </Text>
-          )}
-        </View>
-      )}
+      render={({ field: { onChange, value }, fieldState: { error } }) => {
+        let variant: "error" | "disabled" | "default" = "default";
+        if (error) variant = "error";
+        else if (inputProps.editable === false) variant = "disabled";
+
+        return (
+          <View className="gap-1">
+            <TextInput
+              value={value}
+              onChangeText={onChange}
+              variant={variant}
+              {...inputProps}
+            />
+            {error && (
+              <Text size="sm" className="text-red-500">
+                {error.message}
+              </Text>
+            )}
+          </View>
+        );
+      }}
     />
   );
 }

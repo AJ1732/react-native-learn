@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { useAuthStore } from "@/lib/stores/auth-store";
 import { UserService } from "@/services/user.service";
 import type { ApiResponse } from "@/types/common/api";
 import type { UpdateProfileDTO, User } from "@/types/domain/auth.types";
@@ -17,6 +18,7 @@ export const useProfile = () => {
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
+  const userId = useAuthStore((state) => state.user?.id);
 
   return useMutation({
     mutationFn: (dto: UpdateProfileDTO) => {
@@ -26,12 +28,16 @@ export const useUpdateProfile = () => {
       if (dto.lastName) formData.append("lastName", dto.lastName);
       if (dto.email) formData.append("email", dto.email);
       if (dto.profileImage) {
+        const mimeType = dto.profileImage.mimeType ?? "image/jpeg";
+        const fileExtension = mimeType.split("/")[1] ?? "jpg";
+        const fileName = userId
+          ? `${userId}/profile.${fileExtension}`
+          : `profile.${fileExtension}`;
+
         formData.append("profileImage", {
           uri: dto.profileImage.uri,
-          type: dto.profileImage.mimeType ?? "image/jpeg",
-          name:
-            dto.profileImage.fileName ??
-            `avatar.${(dto.profileImage.mimeType ?? "image/jpeg").split("/")[1]}`,
+          type: mimeType,
+          name: fileName,
         } as any);
       }
 

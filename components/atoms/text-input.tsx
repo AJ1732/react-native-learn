@@ -10,6 +10,7 @@ const inputVariants = cva(
         default: "border-neutral-200 bg-white",
         filled: "border-transparent bg-neutral-100",
         error: "border-red-400 bg-red-50",
+        disabled: "border-neutral-100 bg-neutral-50 text-neutral-400",
       },
     },
     defaultVariants: {

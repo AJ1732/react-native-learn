@@ -1,4 +1,3 @@
-import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -35,14 +34,9 @@ onlineManager.setEventListener((setOnline) => {
 });
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    "Brockmann-Medium": require("../assets/fonts/Brockmann-Medium.otf"),
-    "integralcf-bold": require("../assets/fonts/integralcf-bold.otf"),
-  });
-
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+    SplashScreen.hideAsync();
+  }, []);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", onAppStateChange);
