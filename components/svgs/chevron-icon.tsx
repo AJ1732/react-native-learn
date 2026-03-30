@@ -2,7 +2,7 @@ import Svg, { Path } from "react-native-svg";
 
 import { IconProps } from "@/types/domain/svg.types";
 
-export function ChevronDownIcon({
+export function ChevronIcon({
   color = "#1E0010",
   size = 12,
   style,

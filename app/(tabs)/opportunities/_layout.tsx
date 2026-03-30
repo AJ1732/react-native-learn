@@ -4,7 +4,7 @@ const OpportunityLayout = () => {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
-      <Stack.Screen name="detail/index" options={{ animation: "default" }} />
+      <Stack.Screen name="[id]/index" options={{ animation: "default" }} />
     </Stack>
   );
 };

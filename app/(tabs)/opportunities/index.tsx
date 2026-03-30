@@ -1,50 +1,21 @@
-import { Link } from "@/components/atoms/link";
-import { QueryErrorBoundary } from "@/components/atoms/query-error-boundary";
-import { Skeleton } from "@/components/atoms/skeleton";
-import { Text } from "@/components/atoms/text";
-import { CardBgPurple } from "@/components/svgs/card-bg-purple";
-import { useOpportunities } from "@/hooks/api/use-opportunities";
-import { Opportunity } from "@/types/domain/opportunity.types";
 import { FlashList } from "@shopify/flash-list";
-import { memo, useMemo } from "react";
+
 import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-type OpportunityCardProps = {
-  id: string;
-  title: string;
-};
-
-const OpportunityCard = memo(function OpportunityCard({
-  id,
-  title,
-}: OpportunityCardProps) {
-  const href = useMemo(
-    () => ({
-      pathname: "/opportunities/detail" as const,
-      params: { id },
-    }),
-    [id],
-  );
-
-  return (
-    <Link href={href} className="border border-neutral-200">
-      <View className="h-32 w-full overflow-hidden">
-        <CardBgPurple width="100%" height={128} />
-      </View>
-      <View className="p-4">
-        <Text>{title}</Text>
-      </View>
-    </Link>
-  );
-});
+import { Skeleton } from "@/components/atoms/skeleton";
+import { Text } from "@/components/atoms/text";
+import { QueryErrorBoundary } from "@/components/ui/query-error-boundary";
+import { OpportunityCard } from "@/features/opportunities/components/oppportunity-card";
+import { useOpportunities } from "@/hooks/api/use-opportunities";
+import { Opportunity } from "@/types/domain/opportunity.types";
 
 const SKELETON_ITEMS = Array.from({ length: 4 });
 
 const LoadingSkeleton = () => (
-  <SafeAreaView className="flex-1 gap-4 bg-white p-4" edges={["top"]}>
+  <SafeAreaView className="flex-1 gap-4 bg-canvas p-4" edges={["top"]}>
     {SKELETON_ITEMS.map((_, index) => (
-      <View key={index} className="w-full border border-neutral-100">
+      <View key={index} className="w-full border border-outline-subtle">
         <Skeleton className="h-32 w-full overflow-hidden" />
         <View className="gap-1 p-4">
           <Skeleton className="h-4" style={{ maxWidth: 280 }} />
@@ -75,13 +46,13 @@ const OpportunitiesList = () => {
   if (isError) {
     return (
       <SafeAreaView
-        className="flex-1 items-center justify-center gap-4 bg-white p-8"
+        className="flex-1 items-center justify-center gap-4 bg-canvas p-8"
         edges={["top"]}
       >
         <Text variant="muted">Could not load opportunities.</Text>
         <Pressable
           onPress={async () => await refetch()}
-          className="rounded-full bg-neutral-100 px-6 py-3"
+          className="rounded-full bg-subtle px-6 py-3"
         >
           <Text>Retry</Text>
         </Pressable>
@@ -94,14 +65,16 @@ const OpportunitiesList = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-canvas" edges={["top"]}>
       <FlashList
         data={opportunities}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ItemSeparatorComponent={ItemSeparator}
         contentContainerStyle={{ padding: 16 }}
-        onRefresh={() => { refetch(); }}
+        onRefresh={() => {
+          refetch();
+        }}
         refreshing={isRefetching}
       />
     </SafeAreaView>

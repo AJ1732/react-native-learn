@@ -1,4 +1,5 @@
 import { Redirect, Tabs, usePathname } from "expo-router";
+import { useColorScheme } from "nativewind";
 
 import { HomeIcon } from "@/components/svgs/home-icon";
 import { ProfileIcon } from "@/components/svgs/profile-icon";
@@ -9,6 +10,11 @@ const TabsLayout = () => {
   const pathname = usePathname();
   const hideTabBar = pathname.includes("/opportunities/detail");
   const isAuth = useAuthStore((state) => state.isAuth);
+  const { colorScheme } = useColorScheme();
+
+  const isDark = colorScheme === "dark";
+  const tabBarBackground = isDark ? "#0a0a0a" : "#ffffff";
+  const tabBarBorder = isDark ? "#262626" : "#e5e5e5";
 
   if (!isAuth) return <Redirect href="/(auth)/login" />;
 
@@ -17,8 +23,10 @@ const TabsLayout = () => {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#bf00ff",
-        tabBarInactiveTintColor: "#a3a3a3",
-        tabBarStyle: hideTabBar ? { display: "none" } : undefined,
+        tabBarInactiveTintColor: isDark ? "#525252" : "#a3a3a3",
+        tabBarStyle: hideTabBar
+          ? { display: "none" }
+          : { backgroundColor: tabBarBackground, borderTopColor: tabBarBorder },
       }}
     >
       <Tabs.Screen

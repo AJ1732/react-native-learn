@@ -1,16 +1,17 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import { clsx } from "clsx";
 import { TextInput as RNTextInput, TextInputProps } from "react-native";
 
+import { cn } from "@/lib/utils";
+
 const inputVariants = cva(
-  "h-14 border px-4 font-brockmann-medium text-base text-neutral-900",
+  "text-fg h-14 border px-4 font-brockmann-medium text-base",
   {
     variants: {
       variant: {
-        default: "border-neutral-200 bg-white",
-        filled: "border-transparent bg-neutral-100",
-        error: "border-red-400 bg-red-50",
-        disabled: "border-neutral-100 bg-neutral-50 text-neutral-400",
+        default: "border-outline bg-canvas",
+        filled: "bg-subtle border-transparent",
+        error: "border-red-400 bg-red-50 dark:bg-red-950",
+        disabled: "border-outline-subtle bg-surface text-fg-muted",
       },
     },
     defaultVariants: {
@@ -26,7 +27,7 @@ export function TextInput({ className, variant, style, ...props }: Props) {
     <RNTextInput
       placeholderTextColor="#a3a3a3"
       textAlignVertical="center"
-      className={clsx(inputVariants({ variant }), className)}
+      className={cn(inputVariants({ variant }), className)}
       style={[{ lineHeight: undefined }, style]}
       {...props}
     />

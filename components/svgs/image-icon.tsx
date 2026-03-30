@@ -3,7 +3,7 @@ import Svg, { Path } from "react-native-svg";
 import { IconProps } from "@/types/domain/svg.types";
 
 export const ImageIcon = ({
-  color = "#292D32",
+  color = "#1E0010",
   size = 24,
   style,
 }: IconProps) => {

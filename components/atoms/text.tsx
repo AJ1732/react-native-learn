@@ -1,14 +1,15 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import { clsx } from "clsx";
 import { Text as RNText, TextProps } from "react-native";
+
+import { cn } from "@/lib/utils";
 
 const textVariants = cva("font-brockmann-medium", {
   variants: {
     variant: {
-      default: "text-neutral-900",
-      muted: "text-neutral-500",
-      heading: "text-neutral-900",
-      display: "font-integral-bold",
+      default: "text-fg",
+      muted: "text-fg-muted",
+      heading: "text-fg",
+      display: "text-fg font-integral-bold",
     },
     size: {
       sm: "text-sm",
@@ -38,7 +39,7 @@ type Props = TextProps & VariantProps<typeof textVariants>;
 export function Text({ className, variant, size, children, ...props }: Props) {
   return (
     <RNText
-      className={clsx(textVariants({ variant, size }), className)}
+      className={cn(textVariants({ variant, size }), className)}
       {...props}
     >
       {children}

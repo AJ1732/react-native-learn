@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import Animated, {
   useAnimatedStyle,
   withTiming,
@@ -5,7 +6,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useNetworkStatus } from "@/hooks/use-network-status";
-import { Platform } from "react-native";
+
 import { Text } from "./text";
 
 export function OfflineBanner() {

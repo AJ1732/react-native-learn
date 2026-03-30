@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { clsx } from "clsx";
 import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
@@ -13,6 +12,7 @@ import { FormImagePicker } from "@/components/ui/form-image-picker";
 import { useProfile, useUpdateProfile } from "@/hooks/api/use-user";
 import { useNetworkStatus } from "@/hooks/use-network-status";
 import { useOfflineQueue } from "@/lib/stores/offline-queue.store";
+import { cn } from "@/lib/utils";
 import type { ImageAsset } from "@/types/common/api";
 import type { UpdateProfileDTO } from "@/types/domain/auth.types";
 
@@ -71,7 +71,6 @@ const UpdateProfile = () => {
   );
 
   const onSubmit = (dto: UpdateProfileFormValues) => {
-    console.log("Clcicked o");
     const { dirtyFields } = formState;
     const payload: UpdateProfileDTO = {};
 
@@ -109,13 +108,10 @@ const UpdateProfile = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
-      <ScrollView className="bg-white" keyboardShouldPersistTaps="handled">
+      <ScrollView className="bg-canvas" keyboardShouldPersistTaps="handled">
         <View className="flex-1 grow flex-col justify-center gap-6 px-6">
           <View
-            className={clsx(
-              "gap-1.5",
-              Platform.OS === "ios" ? "mt-8" : "mt-10 ",
-            )}
+            className={cn("gap-1.5", Platform.OS === "ios" ? "mt-8" : "mt-10 ")}
           >
             <Text variant="display" size="3xl">
               Update profile

@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, View } from "react-native";
 
-import { Text } from "./text";
+import { Text } from "../atoms/text";
 
 interface Props {
   children: React.ReactNode;
@@ -24,11 +24,11 @@ export class QueryErrorBoundary extends React.Component<Props, State> {
 
   render() {
     return this.state.hasError ? (
-      <View className="flex-1 items-center justify-center gap-4 bg-white p-8">
+      <View className="flex-1 items-center justify-center gap-4 bg-canvas p-8">
         <Text variant="muted">Something went wrong.</Text>
         <Pressable
           onPress={this.reset}
-          className="rounded-full bg-neutral-100 px-6 py-3"
+          className="rounded-full bg-subtle px-6 py-3"
         >
           <Text>Try again</Text>
         </Pressable>

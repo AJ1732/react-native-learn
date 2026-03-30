@@ -1,35 +1,53 @@
 import { Image } from "expo-image";
+import { useColorScheme } from "nativewind";
 import { Pressable, RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/atoms/button";
 import { Link } from "@/components/atoms/link";
-import { QueryErrorBoundary } from "@/components/atoms/query-error-boundary";
 import { Skeleton } from "@/components/atoms/skeleton";
+import { Switch } from "@/components/atoms/switch";
 import { Text } from "@/components/atoms/text";
+import { ArrowIcon } from "@/components/svgs/arrow";
 import { Edit2Icon } from "@/components/svgs/edit-2-icon";
+import { QueryErrorBoundary } from "@/components/ui/query-error-boundary";
+import { ProfileAccordion } from "@/features/profile/components/accordion";
 import { useLogout } from "@/hooks/api/use-auth";
 import { useProfile } from "@/hooks/api/use-user";
+import { formatDate } from "@/lib/format";
+import { haptics } from "@/lib/haptics";
+import { useThemeColors } from "@/lib/theme";
 
 const ProfileContent = () => {
-  const { data: profile, isLoading, isError, isRefetching, refetch } = useProfile();
+  const {
+    data: profile,
+    isLoading,
+    isError,
+    isRefetching,
+    refetch,
+  } = useProfile();
+  const { colorScheme, setColorScheme } = useColorScheme();
+  const colors = useThemeColors();
+  const { mutateAsync: logout, isPending } = useLogout();
+  const handleLogout = async () => await logout();
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white p-8" edges={["top"]}>
+      <SafeAreaView
+        className="bg-canvas flex-1 items-center justify-center gap-4 p-8"
+        edges={["top"]}
+      >
         <Text variant="muted">Could not load profile.</Text>
-        <Pressable onPress={() => refetch()} className="rounded-full bg-neutral-100 px-6 py-3">
+        <Pressable onPress={() => refetch()} className="bg-subtle px-6 py-3">
           <Text>Retry</Text>
         </Pressable>
       </SafeAreaView>
     );
   }
-  const { mutateAsync: logout, isPending } = useLogout();
-  const handleLogout = async () => await logout();
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <SafeAreaView className="bg-canvas flex-1" edges={["top"]}>
         <ScrollView contentContainerClassName="px-4">
           <View className="gap-8 py-8">
             <Skeleton className="size-11 self-end" />
@@ -51,36 +69,38 @@ const ProfileContent = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+    <SafeAreaView className="bg-canvas flex-1" edges={["top"]}>
       <ScrollView
-        contentContainerClassName="px-4"
+        contentContainerClassName="px-4 flex-1"
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={() => { refetch(); }}
-            tintColor="#bf00ff"
-            colors={["#bf00ff"]}
+            onRefresh={() => refetch()}
+            tintColor={colors.refreshTint}
+            colors={[colors.refreshTint]}
           />
         }
       >
-        <View className="gap-8 py-8">
+        <View className="flex-1 gap-6 py-8">
           <View className="flex-row items-center justify-end">
             {/* Edit profile */}
             <Link
               href="/profile/update"
               variant="accent"
-              className="size-11 bg-neutral-50"
+              className="bg-surface size-11"
+              onPressIn={() => haptics.light()}
             >
               <View className="size-11 items-center justify-center">
-                <Edit2Icon />
+                <Edit2Icon color={colors.icon} />
               </View>
             </Link>
           </View>
 
+          {/* Profile */}
           <View className="flex-row items-end gap-4">
             {!!profile?.profile_image_url && (
               <View
-                className="items-center justify-center self-start rounded-full border border-dashed border-neutral-100 bg-neutral-100"
+                className="border-outline-subtle bg-subtle items-center justify-center self-start rounded-full border border-dashed"
                 style={{ width: 99, height: 99, overflow: "hidden" }}
               >
                 <Image
@@ -103,12 +123,55 @@ const ProfileContent = () => {
             </View>
           </View>
 
+          <ProfileAccordion title="Settings" defaultOpen>
+            <View className="h-12 flex-row items-center justify-between gap-4 px-4">
+              <Text>Account Type</Text>
+              <Text variant="muted" className="capitalize">
+                {profile?.role}
+              </Text>
+            </View>
+            <View className="h-12 flex-row items-center justify-between gap-4 px-4">
+              <Text>Theme</Text>
+              <View className="flex-row items-center gap-3">
+                <Text variant="muted" size="sm" className="capitalize">
+                  {colorScheme ?? "light"}
+                </Text>
+                <Switch
+                  value={colorScheme === "dark"}
+                  onValueChange={(val) =>
+                    setColorScheme(val ? "dark" : "light")
+                  }
+                />
+              </View>
+            </View>
+            <View className="h-12 flex-row items-center justify-between gap-4 px-4">
+              <Text>Subscription</Text>
+              <Link href={"/"}>
+                <View className="flex-row items-center gap-0.5">
+                  <Text variant="muted">Free</Text>
+                  <ArrowIcon
+                    size={20}
+                    color={colors.iconMuted}
+                    style={{ marginTop: 2, transform: [{ rotate: "-45deg" }] }}
+                  />
+                </View>
+              </Link>
+            </View>
+          </ProfileAccordion>
+
           <Button
             variant="destructive"
             label="Click to logout"
             loading={isPending}
             onPress={handleLogout}
           />
+
+          <View className="mt-auto">
+            <Text variant="muted" size="sm" className="text-center">
+              Member since{" "}
+              {profile?.created_at ? formatDate(profile.created_at) : ""}
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

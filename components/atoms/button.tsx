@@ -1,11 +1,13 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import { clsx } from "clsx";
 import {
   ActivityIndicator,
   Pressable,
   PressableProps,
   View,
 } from "react-native";
+
+import { haptics } from "@/lib/haptics";
+import { cn } from "@/lib/utils";
 
 import { Text } from "./text";
 
@@ -15,8 +17,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: "bg-brand-purple-500",
-        secondary: "border border-brand-purple-200 bg-brand-purple-50",
-        outline: "border border-neutral-300 bg-transparent",
+        secondary:
+          "border border-brand-purple-200 bg-brand-purple-50 dark:border-brand-purple-700 dark:bg-brand-purple-950",
+        outline: "border-outline-strong border bg-transparent",
         ghost: "bg-transparent",
         destructive: "bg-red-600",
       },
@@ -47,9 +50,9 @@ const buttonTextVariants = cva("font-brockmann-medium", {
   variants: {
     variant: {
       primary: "text-white",
-      secondary: "text-brand-purple-600",
-      outline: "text-neutral-900",
-      ghost: "text-neutral-900",
+      secondary: "text-brand-purple-600 dark:text-brand-purple-300",
+      outline: "text-fg",
+      ghost: "text-fg",
       destructive: "text-white",
     },
     size: {
@@ -91,19 +94,24 @@ export function Button({
 
   return (
     <Pressable
-      className={clsx(
+      className={cn(
         buttonVariants({ variant, size, fullWidth, disabled: isDisabled }),
         className,
       )}
       disabled={isDisabled}
       {...props}
+      onPressIn={(e) => {
+        if (variant === "destructive") haptics.heavy();
+        else haptics.light();
+        props.onPressIn?.(e);
+      }}
     >
       {loading ? (
         <ActivityIndicator size="small" color={loaderColor} />
       ) : (
         <>
           {leftIcon && <View>{leftIcon}</View>}
-          <Text className={clsx(buttonTextVariants({ variant, size }))}>
+          <Text className={cn(buttonTextVariants({ variant, size }))}>
             {label}
           </Text>
           {rightIcon && <View>{rightIcon}</View>}

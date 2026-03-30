@@ -5,7 +5,7 @@ import { Link } from "@/components/atoms/link";
 
 export default function Index() {
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-canvas">
       <ScrollView contentContainerClassName="gap-4 pb-4 px-4">
         <View className="gap-6 py-8">
           <Link href={{ pathname: "/modal", params: { component: "modal-1" } }}>

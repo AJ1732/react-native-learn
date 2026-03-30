@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 import type { ViewProps } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -9,6 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useMountEffect } from "@/hooks/use-mount-effect";
+import { cn } from "@/lib/utils";
 
 type Props = ViewProps & {
   className?: string;
@@ -32,7 +32,7 @@ export function Skeleton({ className, style, ...props }: Props) {
   return (
     <Animated.View
       style={[animatedStyle, style]}
-      className={clsx("bg-neutral-100", className)}
+      className={cn("bg-subtle", className)}
       {...props}
     />
   );

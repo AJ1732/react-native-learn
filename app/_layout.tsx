@@ -3,13 +3,16 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { AppState, Platform, type AppStateStatus } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   SafeAreaProvider,
   initialWindowMetrics,
 } from "react-native-safe-area-context";
+import { useColorScheme } from "nativewind";
 
 import { OfflineBanner } from "@/components/atoms/offline-banner";
 import { initTokenStore } from "@/lib/axios/token-store";
+import { darkTheme, lightTheme } from "@/lib/theme";
 import { asyncStoragePersister } from "@/lib/query/persister";
 import { queryClient } from "@/lib/query/query-client";
 import { useOfflineQueue } from "@/lib/stores/offline-queue.store";
@@ -42,6 +45,10 @@ onlineManager.setEventListener((setOnline) => {
 });
 
 export default function RootLayout() {
+  const { colorScheme } = useColorScheme();
+  const theme = colorScheme === "dark" ? darkTheme : lightTheme;
+  const canvasColor = colorScheme === "dark" ? "#0a0a0a" : "#ffffff";
+
   const [fontsLoaded] = useFonts({
     "Brockmann-Medium": require("../assets/fonts/Brockmann-Medium.otf"),
     "integralcf-bold": require("../assets/fonts/integralcf-bold.otf"),
@@ -66,28 +73,30 @@ export default function RootLayout() {
       }}
     >
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-        <StatusBar style="dark" />
-        <OfflineBanner />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            animation: "none",
-            contentStyle: { backgroundColor: "white" },
-          }}
-        >
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen
-            name="modal/index"
-            options={{
-              presentation: "formSheet",
-              animation: "default",
-              sheetAllowedDetents: [0.5, 1.0],
-              sheetInitialDetentIndex: 0,
-              sheetGrabberVisible: true,
+        <GestureHandlerRootView style={[{ flex: 1 }, theme]}>
+          <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+          <OfflineBanner />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              animation: "none",
+              contentStyle: { backgroundColor: canvasColor },
             }}
-          />
-        </Stack>
+          >
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen
+              name="modal/index"
+              options={{
+                presentation: "formSheet",
+                animation: "default",
+                sheetAllowedDetents: [0.5, 1.0],
+                sheetInitialDetentIndex: 0,
+                sheetGrabberVisible: true,
+              }}
+            />
+          </Stack>
+        </GestureHandlerRootView>
       </SafeAreaProvider>
     </PersistQueryClientProvider>
   );

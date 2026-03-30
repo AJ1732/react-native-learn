@@ -2,7 +2,7 @@ import Svg, { Path } from "react-native-svg";
 
 import { IconProps } from "@/types/domain/svg.types";
 
-export function StarIcon({ color = "#000", size = 16, style }: IconProps) {
+export function StarIcon({ color = "#1E0010", size = 16, style }: IconProps) {
   return (
     <Svg
       width={size}
