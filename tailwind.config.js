@@ -21,7 +21,7 @@ module.exports = {
         outline: "rgb(var(--outline) / <alpha-value>)",
         "outline-subtle": "rgb(var(--outline-subtle) / <alpha-value>)",
         "outline-strong": "rgb(var(--outline-strong) / <alpha-value>)",
-        "brand-purple": {
+        brand: {
           50: "#f9e6ff",
           100: "#f2ccff",
           200: "#e599ff",

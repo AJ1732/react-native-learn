@@ -3,7 +3,6 @@ import { Pressable, ScrollView, View } from "react-native";
 
 import { Skeleton } from "@/components/atoms/skeleton";
 import { Text } from "@/components/atoms/text";
-import { CardBgPurple } from "@/components/svgs/card-bg-purple";
 import { ChevronIcon } from "@/components/svgs/chevron-icon";
 import { QueryErrorBoundary } from "@/components/ui/query-error-boundary";
 import { useOpportunity } from "@/hooks/api/use-opportunities";
@@ -22,15 +21,13 @@ const BackButton = ({ isLoading = false }: { isLoading?: boolean }) => {
       style={{ elevation: 1 }}
       className={cn(
         "absolute left-4 top-16 z-10 rounded-full px-4 py-3",
-        isLoading
-          ? "bg-outline"
-          : "bg-brand-purple-100 dark:bg-brand-purple-900",
+        isLoading ? "bg-outline" : "bg-outline dark:bg-surface",
       )}
     >
       <View style={{ transform: [{ translateX: -1 }, { rotate: "90deg" }] }}>
         <ChevronIcon
           size={20}
-          color={isLoading ? colors.iconMuted : colors.brandChevron}
+          color={isLoading ? colors.iconMuted : colors.chevron}
         />
       </View>
     </Pressable>
@@ -43,11 +40,11 @@ function DetailsContent() {
 
   if (isError) {
     return (
-      <View className="bg-canvas flex-1 items-center justify-center gap-4 p-8">
+      <View className="flex-1 items-center justify-center gap-4 bg-canvas p-8">
         <Text variant="muted">Could not load opportunity.</Text>
         <Pressable
           onPress={() => refetch()}
-          className="bg-subtle rounded-full px-6 py-3"
+          className="rounded-full bg-subtle px-6 py-3"
         >
           <Text>Retry</Text>
         </Pressable>
@@ -57,23 +54,23 @@ function DetailsContent() {
 
   if (isLoading) {
     return (
-      <View className="bg-canvas flex-1">
-        <View className="bg-subtle h-80">
+      <View className="flex-1 bg-canvas">
+        <View className="h-80 bg-subtle">
           <Skeleton className="h-80 w-full" />
           <BackButton isLoading />
         </View>
 
         <View className="gap-2 p-6">
           <Skeleton
-            className="bg-subtle h-9 w-full"
+            className="h-9 w-full bg-subtle"
             style={{ maxWidth: 200 }}
           />
           <Skeleton
-            className="bg-subtle h-9 w-full"
+            className="h-9 w-full bg-subtle"
             style={{ maxWidth: 320 }}
           />
           <Skeleton
-            className="bg-subtle h-9 w-full"
+            className="h-9 w-full bg-subtle"
             style={{ maxWidth: 100 }}
           />
         </View>
@@ -83,8 +80,7 @@ function DetailsContent() {
 
   return (
     <ScrollView className="bg-canvas">
-      <View className="bg-subtle h-80">
-        <CardBgPurple width="100%" height="100%" />
+      <View className="h-80 bg-subtle">
         <BackButton />
       </View>
 

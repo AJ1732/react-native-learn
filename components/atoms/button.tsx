@@ -7,6 +7,7 @@ import {
 } from "react-native";
 
 import { haptics } from "@/lib/haptics";
+import { brandColor } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 import { Text } from "./text";
@@ -16,9 +17,9 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-brand-purple-500",
+        primary: "bg-brand-500",
         secondary:
-          "border border-brand-purple-200 bg-brand-purple-50 dark:border-brand-purple-700 dark:bg-brand-purple-950",
+          "border border-brand-200 bg-brand-50 dark:border-brand-700 dark:bg-brand-950",
         outline: "border-outline-strong border bg-transparent",
         ghost: "bg-transparent",
         destructive: "bg-red-600",
@@ -50,7 +51,7 @@ const buttonTextVariants = cva("font-brockmann-medium", {
   variants: {
     variant: {
       primary: "text-white",
-      secondary: "text-brand-purple-600 dark:text-brand-purple-300",
+      secondary: "text-brand-600 dark:text-brand-300",
       outline: "text-fg",
       ghost: "text-fg",
       destructive: "text-white",
@@ -90,7 +91,7 @@ export function Button({
   const isDisabled = disabled || loading;
 
   const loaderColor =
-    variant === "primary" || variant === "destructive" ? "white" : "#bf00ff";
+    variant === "primary" || variant === "destructive" ? "white" : brandColor;
 
   return (
     <Pressable

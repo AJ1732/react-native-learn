@@ -12,6 +12,7 @@ import Animated, {
 
 import { Text } from "@/components/atoms/text";
 import { ChevronIcon } from "@/components/svgs/chevron-icon";
+import { useThemeColors } from "@/lib/theme";
 
 type Props = {
   title: string;
@@ -26,6 +27,7 @@ export function ProfileAccordion({
 }: Props) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const chevronRotation = useSharedValue(defaultOpen ? 180 : 0);
+  const colors = useThemeColors();
 
   const chevronStyle = useAnimatedStyle(() => ({
     transform: [
@@ -51,7 +53,7 @@ export function ProfileAccordion({
       >
         <Text>{title}</Text>
         <Animated.View style={chevronStyle}>
-          <ChevronIcon style={{ marginTop: 2 }} />
+          <ChevronIcon color={colors.icon} style={{ marginTop: 2 }} />
         </Animated.View>
       </Pressable>
       {isOpen && (

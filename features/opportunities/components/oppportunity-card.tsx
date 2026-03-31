@@ -1,6 +1,5 @@
 import { Link } from "@/components/atoms/link";
 import { Text } from "@/components/atoms/text";
-import { CardBgPurple } from "@/components/svgs/card-bg-purple";
 import { memo, useMemo } from "react";
 import { View } from "react-native";
 
@@ -23,9 +22,7 @@ export const OpportunityCard = memo(function OpportunityCard({
 
   return (
     <Link href={href} className="border border-outline">
-      <View className="h-32 w-full overflow-hidden">
-        <CardBgPurple width="100%" height={128} />
-      </View>
+      <View className="h-32 w-full overflow-hidden bg-subtle"></View>
       <View className="p-4">
         <Text>{title}</Text>
       </View>

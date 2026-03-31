@@ -65,7 +65,7 @@ export function Switch({
           justifyContent: "center",
         }}
         className={cn(
-          value ? "bg-brand-purple-500" : "bg-neutral-300 dark:bg-neutral-600",
+          value ? "bg-brand-500" : "bg-neutral-300 dark:bg-neutral-600",
           disabled && "opacity-40",
           className,
         )}

@@ -1,5 +1,6 @@
-import { useColorScheme } from "nativewind";
-import { vars } from "nativewind";
+import { useColorScheme, vars } from "nativewind";
+
+export const brandColor = "#bf00ff";
 
 export const lightTheme = vars({
   "--canvas": "255 255 255",
@@ -27,18 +28,23 @@ const paletteColors = {
   light: {
     icon: "#262626",
     iconMuted: "#737373",
-    brandChevron: "#260033",
-    refreshTint: "#bf00ff",
+    chevron: "#171717",
+    tint: "#525252",
   },
   dark: {
     icon: "#d4d4d4",
     iconMuted: "#a3a3a3",
-    brandChevron: "#e599ff",
-    refreshTint: "#bf00ff",
+    chevron: "#f5f5f5",
+    tint: "#a3a3a3",
   },
 } as const;
 
-export type PaletteColors = typeof paletteColors.light;
+export type PaletteColors = {
+  icon: string;
+  iconMuted: string;
+  chevron: string;
+  tint: string;
+};
 
 export function useThemeColors(): PaletteColors {
   const { colorScheme } = useColorScheme();

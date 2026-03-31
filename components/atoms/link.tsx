@@ -7,7 +7,7 @@ const linkVariants = cva("font-brockmann-medium", {
   variants: {
     variant: {
       default: "text-fg",
-      accent: "text-brand-purple-500",
+      accent: "text-brand-500",
     },
   },
   defaultVariants: {

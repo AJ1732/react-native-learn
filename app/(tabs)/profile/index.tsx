@@ -34,7 +34,7 @@ const ProfileContent = () => {
   if (isError) {
     return (
       <SafeAreaView
-        className="bg-canvas flex-1 items-center justify-center gap-4 p-8"
+        className="flex-1 items-center justify-center gap-4 bg-canvas p-8"
         edges={["top"]}
       >
         <Text variant="muted">Could not load profile.</Text>
@@ -47,7 +47,7 @@ const ProfileContent = () => {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="bg-canvas flex-1" edges={["top"]}>
+      <SafeAreaView className="flex-1 bg-canvas" edges={["top"]}>
         <ScrollView contentContainerClassName="px-4">
           <View className="gap-8 py-8">
             <Skeleton className="size-11 self-end" />
@@ -69,15 +69,15 @@ const ProfileContent = () => {
   }
 
   return (
-    <SafeAreaView className="bg-canvas flex-1" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-canvas" edges={["top"]}>
       <ScrollView
         contentContainerClassName="px-4 flex-1"
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={() => refetch()}
-            tintColor={colors.refreshTint}
-            colors={[colors.refreshTint]}
+            tintColor={colors.tint}
+            colors={[colors.tint]}
           />
         }
       >
@@ -87,7 +87,7 @@ const ProfileContent = () => {
             <Link
               href="/profile/update"
               variant="accent"
-              className="bg-surface size-11"
+              className="bg-surface"
               onPressIn={() => haptics.light()}
             >
               <View className="size-11 items-center justify-center">
@@ -100,7 +100,7 @@ const ProfileContent = () => {
           <View className="flex-row items-end gap-4">
             {!!profile?.profile_image_url && (
               <View
-                className="border-outline-subtle bg-subtle items-center justify-center self-start rounded-full border border-dashed"
+                className="items-center justify-center self-start rounded-full border border-dashed border-outline-subtle bg-subtle"
                 style={{ width: 99, height: 99, overflow: "hidden" }}
               >
                 <Image
@@ -146,7 +146,7 @@ const ProfileContent = () => {
             </View>
             <View className="h-12 flex-row items-center justify-between gap-4 px-4">
               <Text>Subscription</Text>
-              <Link href={"/"}>
+              <Link href="https://ejemeniboi.com">
                 <View className="flex-row items-center gap-0.5">
                   <Text variant="muted">Free</Text>
                   <ArrowIcon

@@ -4,6 +4,7 @@ import { useColorScheme } from "nativewind";
 import { HomeIcon } from "@/components/svgs/home-icon";
 import { ProfileIcon } from "@/components/svgs/profile-icon";
 import { StarIcon } from "@/components/svgs/star-icon";
+import { brandColor } from "@/lib/theme";
 import { useAuthStore } from "@/lib/stores/auth-store";
 
 const TabsLayout = () => {
@@ -22,7 +23,7 @@ const TabsLayout = () => {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#bf00ff",
+        tabBarActiveTintColor: brandColor,
         tabBarInactiveTintColor: isDark ? "#525252" : "#a3a3a3",
         tabBarStyle: hideTabBar
           ? { display: "none" }

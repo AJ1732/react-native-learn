@@ -4,7 +4,7 @@ import { Text } from "../atoms/text";
 
 export const Modal1 = () => {
   return (
-    <View>
+    <View className="p-6">
       <Text>Component Modal1</Text>
     </View>
   );
