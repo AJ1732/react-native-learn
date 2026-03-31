@@ -1,17 +1,25 @@
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { IconButton } from "@/components/atoms/icon-button";
 import { Link } from "@/components/atoms/link";
 import { Text } from "@/components/atoms/text";
+import { useDrawer } from "@/components/layout/drawer";
 import { Header } from "@/components/layout/header";
 import { MenuIcon } from "@/components/svgs/menu-icon";
+import { useThemeColors } from "@/lib/theme";
 
 export default function Index() {
+  const { toggle } = useDrawer();
+  const colors = useThemeColors();
+
   return (
     <SafeAreaView className="flex-1 bg-canvas">
       <Header>
         <Header.Left>
-          <MenuIcon />
+          <IconButton onPress={toggle}>
+            <MenuIcon color={colors.icon} />
+          </IconButton>
         </Header.Left>
         <Header.Center>
           <Text variant="display" className="uppercase">
