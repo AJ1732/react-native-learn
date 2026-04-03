@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import React, { createContext, use, useCallback, useState } from "react";
+import { createContext, use, useCallback, useMemo, useState } from "react";
 import { Pressable, View, useWindowDimensions } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -15,13 +15,14 @@ import { Text } from "@/components/atoms/text";
 import { haptics } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
-// Constants (tweak to taste)
-// damping: 28 > critical threshold (25.3) → no overshoot/bounce on a large element
+// Constants
+// damping: 28 > critical threshold (25.3) → no overshoot/bounce on large elements
 const SPRING = { damping: 28, stiffness: 200, mass: 0.8 };
-const SIDEBAR_WIDTH_RATIO = 0.72; // sidebar takes 72% of screen width
-const SCENE_SCALE = 0.84; // scene shrinks to 84% when drawer is open
-const SCENE_BORDER_RADIUS = 24; // rounded corners on scene when open
+const SIDEBAR_WIDTH_RATIO = 0.72;
+const SCENE_SCALE = 0.84;
+const SCENE_BORDER_RADIUS = 24;
 
+// Context
 type DrawerContextValue = {
   isOpen: boolean;
   progress: SharedValue<number>;
@@ -43,6 +44,7 @@ export function useDrawer() {
   return { open, close, toggle, isOpen };
 }
 
+// Root
 type RootProps = { children: React.ReactNode; className?: string };
 
 function DrawerRoot({ children, className }: RootProps) {
@@ -71,11 +73,11 @@ function DrawerRoot({ children, className }: RootProps) {
   );
 }
 
+// Sidebar
 type SlotProps = { children?: React.ReactNode; className?: string };
 
 function Sidebar({ children, className }: SlotProps) {
   const { width } = useWindowDimensions();
-  const sidebarWidth = width * SIDEBAR_WIDTH_RATIO;
 
   return (
     <View
@@ -84,7 +86,7 @@ function Sidebar({ children, className }: SlotProps) {
         top: 0,
         bottom: 0,
         left: 0,
-        width: sidebarWidth,
+        width: width * SIDEBAR_WIDTH_RATIO,
       }}
       className={cn("bg-surface", className)}
     >
@@ -93,11 +95,12 @@ function Sidebar({ children, className }: SlotProps) {
   );
 }
 
+// Scene
 function Scene({ children, className }: SlotProps) {
   const { progress, close, isOpen } = useDrawerContext();
   const { width } = useWindowDimensions();
 
-  // translateX positions the scene's left edge at ~sidebarWidth when fully open
+  // translateX positions the scene's left edge at sidebarWidth when fully open
   const targetTranslateX =
     width * SIDEBAR_WIDTH_RATIO + width * ((SCENE_SCALE - 1) / 2);
 
@@ -113,31 +116,45 @@ function Scene({ children, className }: SlotProps) {
 
   const startProgress = useSharedValue(0);
 
-  const panGesture = Gesture.Pan()
-    .activeOffsetX(-10) // only activate for leftward swipes
-    .onBegin(() => {
-      startProgress.value = progress.value;
-    })
-    .onUpdate((e) => {
-      progress.value = Math.max(
-        0,
-        Math.min(1, startProgress.value + e.translationX / targetTranslateX),
-      );
-    })
-    .onEnd((e) => {
-      if (progress.value < 0.5 || e.velocityX < -300) {
-        progress.value = withSpring(0, SPRING);
-        scheduleOnRN(close);
-      } else {
-        progress.value = withSpring(1, SPRING);
-      }
-    });
+  const panGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .activeOffsetX(-10)
+        .onBegin(() => {
+          startProgress.value = progress.value;
+        })
+        .onUpdate((e) => {
+          progress.value = Math.max(
+            0,
+            Math.min(
+              1,
+              startProgress.value + e.translationX / targetTranslateX,
+            ),
+          );
+        })
+        .onEnd((e) => {
+          if (progress.value < 0.5 || e.velocityX < -300) {
+            progress.value = withSpring(0, SPRING);
+            scheduleOnRN(close);
+          } else {
+            progress.value = withSpring(1, SPRING);
+          }
+        }),
+    [progress, startProgress, close, targetTranslateX],
+  );
 
-  const tapGesture = Gesture.Tap().onEnd((_e, success) => {
-    if (success) scheduleOnRN(close);
-  });
+  const tapGesture = useMemo(
+    () =>
+      Gesture.Tap().onEnd((_e, success) => {
+        if (success) scheduleOnRN(close);
+      }),
+    [close],
+  );
 
-  const overlayGesture = Gesture.Race(panGesture, tapGesture);
+  const overlayGesture = useMemo(
+    () => Gesture.Race(panGesture, tapGesture),
+    [panGesture, tapGesture],
+  );
 
   return (
     <Animated.View
@@ -154,6 +171,7 @@ function Scene({ children, className }: SlotProps) {
   );
 }
 
+// Item
 type ItemProps = { label: string; href: string; className?: string };
 
 function Item({ label, href, className }: ItemProps) {

@@ -30,12 +30,14 @@ const paletteColors = {
     iconMuted: "#737373",
     chevron: "#171717",
     tint: "#525252",
+    subtle: "#f5f5f5",
   },
   dark: {
     icon: "#d4d4d4",
     iconMuted: "#a3a3a3",
     chevron: "#f5f5f5",
     tint: "#a3a3a3",
+    subtle: "#262626",
   },
 } as const;
 
@@ -44,6 +46,7 @@ export type PaletteColors = {
   iconMuted: string;
   chevron: string;
   tint: string;
+  subtle: string;
 };
 
 export function useThemeColors(): PaletteColors {
