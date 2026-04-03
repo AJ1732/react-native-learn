@@ -1,5 +1,7 @@
+import { router } from "expo-router";
 import React, { createContext, use, useCallback, useState } from "react";
 import { Pressable, View, useWindowDimensions } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   SharedValue,
   interpolate,
@@ -7,7 +9,10 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 
+import { Text } from "@/components/atoms/text";
+import { haptics } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 // Constants (tweak to taste)
@@ -106,6 +111,34 @@ function Scene({ children, className }: SlotProps) {
     borderRadius: interpolate(progress.value, [0, 1], [0, SCENE_BORDER_RADIUS]),
   }));
 
+  const startProgress = useSharedValue(0);
+
+  const panGesture = Gesture.Pan()
+    .activeOffsetX(-10) // only activate for leftward swipes
+    .onBegin(() => {
+      startProgress.value = progress.value;
+    })
+    .onUpdate((e) => {
+      progress.value = Math.max(
+        0,
+        Math.min(1, startProgress.value + e.translationX / targetTranslateX),
+      );
+    })
+    .onEnd((e) => {
+      if (progress.value < 0.5 || e.velocityX < -300) {
+        progress.value = withSpring(0, SPRING);
+        scheduleOnRN(close);
+      } else {
+        progress.value = withSpring(1, SPRING);
+      }
+    });
+
+  const tapGesture = Gesture.Tap().onEnd((_e, success) => {
+    if (success) scheduleOnRN(close);
+  });
+
+  const overlayGesture = Gesture.Race(panGesture, tapGesture);
+
   return (
     <Animated.View
       style={[{ flex: 1, overflow: "hidden" }, animatedStyle]}
@@ -113,11 +146,34 @@ function Scene({ children, className }: SlotProps) {
     >
       {children}
       {isOpen && (
-        <Pressable style={{ position: "absolute", inset: 0 }} onPress={close} />
+        <GestureDetector gesture={overlayGesture}>
+          <Animated.View style={{ position: "absolute", inset: 0 }} />
+        </GestureDetector>
       )}
     </Animated.View>
   );
 }
 
+type ItemProps = { label: string; href: string; className?: string };
+
+function Item({ label, href, className }: ItemProps) {
+  const { close } = useDrawerContext();
+
+  const onPress = () => {
+    haptics.light();
+    router.push(href as never);
+    close();
+  };
+
+  return (
+    <Pressable
+      onPress={onPress}
+      className={cn("h-12 justify-center active:opacity-60", className)}
+    >
+      <Text variant="muted">{label}</Text>
+    </Pressable>
+  );
+}
+
 // Compound export
-export const Drawer = Object.assign(DrawerRoot, { Sidebar, Scene });
+export const Drawer = Object.assign(DrawerRoot, { Sidebar, Scene, Item });

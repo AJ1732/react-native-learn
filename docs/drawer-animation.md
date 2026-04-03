@@ -46,9 +46,50 @@ Snappy but not over-damped. Increase `damping` to slow the bounce.
 
 ## Closing the Drawer
 
-Two ways:
+Three ways:
 1. Call `useDrawer().close()` programmatically
-2. Tap the transparent `Pressable` overlay that covers `Drawer.Scene` when `isOpen === true`
+2. Tap the overlay that covers `Drawer.Scene` when `isOpen === true`
+3. Swipe left on the scene content
+
+### Why we replaced `Pressable` with `GestureDetector`
+
+The original implementation used a `Pressable` overlay to close the drawer on tap.
+It was replaced with a `GestureDetector` (from `react-native-gesture-handler`) composing
+two gestures via `Gesture.Race`:
+
+**`Gesture.Pan` (swipe-to-close)**
+- `activeOffsetX: -10` — only activates for leftward movement (≥ 10px), so scrollable content inside the scene is not blocked.
+- `onUpdate` — writes directly to `progress` SharedValue on the UI thread, giving real-time 1:1 finger tracking with no JS bridge overhead.
+- `onEnd` — snaps to closed if `progress < 0.5` or swipe velocity is fast enough (`velocityX < -300`), otherwise snaps back open.
+
+**`Gesture.Tap` (tap-to-close)**
+- Replaces the `Pressable` 1:1. Fires `close()` on a successful tap.
+
+**`Gesture.Race`**
+- The two gestures compete. `Pan` requires 10px of leftward movement before it activates, so quick taps always resolve via `Tap`. A drag activates `Pan` first and cancels `Tap`.
+
+**Why not keep `Pressable`?**
+`Pressable` only handles discrete press events — it has no concept of drag progress.
+To get interactive drag feedback (scene following the finger in real-time), everything
+needs to live inside Reanimated worklets on the UI thread. `GestureDetector` with a
+`Pan` gesture achieves that; `Pressable` cannot.
+
+**Scheduling JS-thread calls from worklets**
+Gesture callbacks (`.onUpdate`, `.onEnd`) run on the UI thread as worklets. Any function
+that touches React state must be explicitly scheduled back onto the JS (RN) thread.
+
+The API has evolved across library versions:
+
+| Version | API | Usage |
+|---|---|---|
+| Reanimated ≤ 3 | `runOnJS` from `react-native-reanimated` | `runOnJS(fn)()` |
+| Reanimated 4 (early) | `runOnJS` from `react-native-worklets` | `runOnJS(fn)()` |
+| Reanimated 4 (current) | `scheduleOnRN` from `react-native-worklets` | `scheduleOnRN(fn)` |
+
+`scheduleOnRN` does not return a callable — it schedules the function immediately.
+Calling it as `scheduleOnRN(fn)()` causes a "not callable" TS error.
+
+Without this, `close()` calls `setIsOpen(false)` on the UI thread, which crashes the app.
 
 ## Constants (tweak in drawer.tsx)
 
@@ -80,4 +121,6 @@ const { toggle } = useDrawer();
 
 ## Dependencies
 
-No new packages — uses `react-native-reanimated` (already installed).
+- `react-native-reanimated` — SharedValue, useAnimatedStyle, withSpring
+- `react-native-gesture-handler` — GestureDetector, Gesture.Pan, Gesture.Tap, Gesture.Race
+- `react-native-worklets` — scheduleOnRN (schedule JS-thread calls from UI-thread worklets)
