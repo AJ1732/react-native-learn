@@ -2,8 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ENDPOINTS } from "@/constants/endpoints";
 import { tokenStore } from "@/lib/axios/token-store";
-import { useAuthStore } from "@/lib/stores/auth-store";
 import { queryKeys } from "@/lib/query/query-keys";
+import { useAuthStore } from "@/lib/stores/auth-store";
 import { UserService } from "@/services/user.service";
 import type { ApiResponse } from "@/types/common/api";
 import type { UpdateProfileDTO, User } from "@/types/domain/auth.types";
@@ -11,12 +11,17 @@ import type { UpdateProfileDTO, User } from "@/types/domain/auth.types";
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const useProfile = () => {
+  const isAuth = useAuthStore((state) => state.isAuth);
+
   return useQuery({
     queryKey: queryKeys.user.profile,
     queryFn: async () => {
       const response = await UserService.getProfile({});
-      return (response.data as ApiResponse<User>).data;
+      const user = (response.data as ApiResponse<User>).data;
+      useAuthStore.getState().setProfile(user);
+      return user as User;
     },
+    enabled: isAuth,
     staleTime: Infinity,
   });
 };

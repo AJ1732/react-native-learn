@@ -42,11 +42,17 @@ export function CustomTabBar({
         className="flex-1 items-center justify-center gap-1.5"
       >
         {options.tabBarIcon?.({ focused: isFocused, color, size: 24 })}
-        <Text
-          style={{ color, fontSize: 10, fontWeight: isFocused ? "600" : "400" }}
-        >
-          {label}
-        </Text>
+        {options.tabBarShowLabel ? (
+          <Text
+            style={{
+              color,
+              fontSize: 10,
+              fontWeight: isFocused ? "600" : "400",
+            }}
+          >
+            {label}
+          </Text>
+        ) : null}
       </Pressable>
     );
   };

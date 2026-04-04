@@ -1,4 +1,3 @@
-import { Image } from "expo-image";
 import { useColorScheme } from "nativewind";
 import { Pressable, RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,6 +9,7 @@ import { Switch } from "@/components/atoms/switch";
 import { Text } from "@/components/atoms/text";
 import { ArrowIcon } from "@/components/svgs/arrow";
 import { Edit2Icon } from "@/components/svgs/edit-2-icon";
+import { Avatar } from "@/components/ui/avatar";
 import { QueryErrorBoundary } from "@/components/ui/query-error-boundary";
 import { ProfileAccordion } from "@/features/profile/components/accordion";
 import { useLogout } from "@/hooks/api/use-auth";
@@ -99,19 +99,10 @@ const ProfileContent = () => {
           {/* Profile */}
           <View className="flex-row items-end gap-4">
             {!!profile?.profile_image_url && (
-              <View
-                className="items-center justify-center self-start rounded-full border border-dashed border-outline-subtle bg-subtle"
-                style={{ width: 99, height: 99, overflow: "hidden" }}
-              >
-                <Image
-                  source={{
-                    uri: `${profile.profile_image_url}?t=${profile.updated_at}`,
-                  }}
-                  style={{ width: 96, height: 96, borderRadius: 48 }}
-                  contentFit="cover"
-                  transition={200}
-                />
-              </View>
+              <Avatar
+                size={99}
+                uri={`${profile.profile_image_url}?t=${profile.updated_at}`}
+              />
             )}
 
             <View className="pb-4">

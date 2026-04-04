@@ -6,7 +6,13 @@ import type { User } from "@/types/domain/auth.types";
 type AuthStore = {
   isAuth: boolean;
   user: User | null;
-  login: (accessToken: string, refreshToken: string, user: User, expiresAt?: number) => void;
+  login: (
+    accessToken: string,
+    refreshToken: string,
+    user: User,
+    expiresAt?: number,
+  ) => void;
+  setProfile: (user: User) => void;
   logout: () => void;
 };
 
@@ -22,6 +28,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
   ) => {
     tokenStore.set(accessToken, refreshToken, expiresAt, user);
     set({ isAuth: true, user });
+  },
+
+  setProfile: (user: User) => {
+    tokenStore.persistUser(user);
+    set({ user });
   },
 
   logout: () => {

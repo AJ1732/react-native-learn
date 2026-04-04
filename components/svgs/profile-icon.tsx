@@ -3,7 +3,7 @@ import Svg, { Path } from "react-native-svg";
 import { IconProps } from "@/types/domain/svg.types";
 
 export function ProfileIcon({
-  color = "#1E0010",
+  color = "#171717",
   size = 24,
   style,
 }: IconProps) {

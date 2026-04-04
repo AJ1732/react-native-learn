@@ -1,5 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { queryKeys } from "@/lib/query/query-keys";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { AuthService } from "@/services/auth.service";
 import type {
@@ -43,11 +44,15 @@ export const useSignup = () => {
 };
 
 export const useLogout = () => {
+  const queryClient = useQueryClient();
   const logout = useAuthStore((state) => state.logout);
 
   return useMutation({
     mutationFn: () => AuthService.logout(),
-    onSettled: () => logout(),
+    onSettled: () => {
+      queryClient.removeQueries({ queryKey: queryKeys.user.profile });
+      logout();
+    },
     // Always clear locally — even if server rejects (expired token, 403, network error)
     onError: () => {},
   });

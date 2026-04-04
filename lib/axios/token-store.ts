@@ -34,10 +34,12 @@ export const tokenStore = {
       );
     }
     if (user) {
-      SecureStore.setItemAsync(USER_KEY, JSON.stringify(user)).catch(
-        console.error,
-      );
+      tokenStore.persistUser(user);
     }
+  },
+
+  persistUser: (user: User): void => {
+    SecureStore.setItemAsync(USER_KEY, JSON.stringify(user)).catch(console.error);
   },
 
   clear: (): void => {

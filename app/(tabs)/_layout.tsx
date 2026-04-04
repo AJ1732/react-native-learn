@@ -7,13 +7,18 @@ import { BottomPanel } from "@/components/layout/bottom-panel";
 import { CustomTabBar } from "@/components/layout/custom-tab-bar";
 import { Drawer } from "@/components/layout/drawer";
 import { HomeIcon } from "@/components/svgs/home-icon";
-import { ProfileIcon } from "@/components/svgs/profile-icon";
+// import { ProfileIcon } from "@/components/svgs/profile-icon";
+import { Avatar } from "@/components/ui/avatar";
+import { useProfile } from "@/hooks/api/use-user";
 import { useAuthStore } from "@/lib/stores/auth-store";
 
 const SIDEBAR_ITEMS = [{ label: "Opportunities", href: "/opportunities" }];
 
 const TabsLayout = () => {
   const isAuth = useAuthStore((state) => state.isAuth);
+  const user = useAuthStore((state) => state.user);
+  useProfile();
+  console.log(user);
   if (!isAuth) return <Redirect href="/(auth)/login" />;
 
   return (
@@ -55,8 +60,9 @@ const TabsLayout = () => {
               name="profile"
               options={{
                 title: "Profile",
+                tabBarShowLabel: false,
                 tabBarIcon: ({ color, size }) => (
-                  <ProfileIcon color={color} size={size} />
+                  <Avatar uri={user?.profile_image_url} size={32} />
                 ),
               }}
             />
